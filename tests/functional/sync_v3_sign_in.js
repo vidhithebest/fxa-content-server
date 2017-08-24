@@ -71,11 +71,28 @@ define([
         .then(clearBrowserState());
     },
 
-    'verified, verify same browser': function () {
-      return this.remote
-        .then(setupTest({ preVerified: true }))
+    'verified, verify same browser - control': function () {
+      const query = { forceExperiment: 'cadOnSignin', forceExperimentGroup: 'control' };
 
-        .then(openVerificationLinkInNewTab(email, 0))
+      return this.remote
+        .then(setupTest({ preVerified: true, query }))
+
+        .then(openVerificationLinkInNewTab(email, 0, { query }))
+        .switchToWindow('newwindow')
+          .then(testElementExists(selectors.SIGNIN_COMPLETE.HEADER))
+          .then(closeCurrentWindow())
+
+        // about:accounts will take over post-verification, no transition
+        .then(noPageTransition(selectors.CONFIRM_SIGNIN.HEADER));
+    },
+
+    'verified, verify same browser - treatment': function () {
+      const query = { forceExperiment: 'cadOnSignin', forceExperimentGroup: 'control' };
+
+      return this.remote
+        .then(setupTest({ preVerified: true, query }))
+
+        .then(openVerificationLinkInNewTab(email, 0, { query }))
         .switchToWindow('newwindow')
           .then(testElementExists(selectors.SIGNIN_COMPLETE.HEADER))
           .then(closeCurrentWindow())
