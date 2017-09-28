@@ -14,7 +14,6 @@
   "static_max_age" : 0,
   "route_log_format": "dev_fxa",
   "logging": {
-    "fmt": "pretty",
     "level": "debug"
   },
   "static_directory": "app",
