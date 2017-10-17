@@ -445,7 +445,7 @@ define(function (require, exports, module) {
       /**
        * Is the email-first flow supported?
        */
-      emailFirst: false,
+      emailFirst: true,
       /**
        * should the *_complete pages show the marketing snippet?
        */

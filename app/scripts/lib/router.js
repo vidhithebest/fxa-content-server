@@ -50,6 +50,7 @@ define(function (require, exports, module) {
   const TosView = require('../views/tos');
   const VerificationReasons = require('./verification-reasons');
   const WhyConnectAnotherDeviceView = require('../views/why_connect_another_device');
+  const UpgradeSessionView = require('../views/settings/upgrade_session');
 
   function createViewHandler(View, options) {
     return function () {
@@ -105,6 +106,7 @@ define(function (require, exports, module) {
       'settings/delete_account(/)': createChildViewHandler(DeleteAccountView, SettingsView),
       'settings/display_name(/)': createChildViewHandler(DisplayNameView, SettingsView),
       'settings/emails(/)': createChildViewHandler(EmailsView, SettingsView),
+      'settings/upgrade_session(/)': createChildViewHandler(UpgradeSessionView, SettingsView),
       'signin(/)': 'onSignIn',
       'signin_bounced(/)': createViewHandler(SignInBouncedView),
       'signin_confirmed(/)': createViewHandler(ReadyView, { type: VerificationReasons.SIGN_IN }),

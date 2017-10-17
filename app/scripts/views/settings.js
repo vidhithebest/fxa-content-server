@@ -30,10 +30,12 @@ define(function (require, exports, module) {
   const SubPanels = require('./sub_panels');
   const Template = require('stache!templates/settings');
   const UserAgentMixin = require('../lib/user-agent-mixin');
+  const UpgradeSessionView = require('./settings/upgrade_session');
 
   var PANEL_VIEWS = [
     AvatarView,
     DisplayNameView,
+    UpgradeSessionView,
     EmailsView,
     ClientsView,
     ClientDisconnectView,
