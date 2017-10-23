@@ -14,11 +14,12 @@ define(function (require, exports, module) {
   const t = (msg) => msg;
 
   const View = FormView.extend({
-    template: Template,
+    mustUpgradeTemplate: Template,
     className: 'upgrade-session',
     viewName: 'settings.upgrade-session',
 
     events: {
+      'click .refresh': preventDefaultThen('refreshVerifiedState'),
       'click .resend': preventDefaultThen('send'),
       'click .verify-send-email': preventDefaultThen('send'),
     },
@@ -27,8 +28,17 @@ define(function (require, exports, module) {
       const account = this.getSignedInAccount();
       return account.recoveryEmailSecondaryEmailEnabled()
         .then((isEnabled) => {
-          if (isEnabled) {
-            return this.remove();
+          if (! isEnabled) {
+            this.template = this.mustUpgradeTemplate;
+          } else {
+            this.template = this.upgradedTemplate;
+            if (this.model.get('refreshing')) {
+              this.model.set({
+                isPanelOpen: true,
+                success: t('Primary email verified')
+              });
+              this.model.unset('refreshing');
+            }
           }
         });
     },
@@ -40,29 +50,17 @@ define(function (require, exports, module) {
           this.displaySuccess(t('Verification email sent'), {
             closePanel: false
           });
-          this.navigate('settings/upgrade_session');
         });
     },
 
     setInitialContext (context) {
-      context.set('title', 'Secondary email');
-      context.set('caption', 'A secondary email is an additional address for receiving security notices and confirming new Sync devices');
       context.set('email', this.getSignedInAccount().get('email'));
     },
 
-    submit () {
-      const account = this.getSignedInAccount();
-      return account.recoveryEmailSecondaryEmailEnabled()
-        .then((isEnabled) => {
-          if (isEnabled) {
-            this.displaySuccess(t('Primary email verified'), {
-              closePanel: false
-            });
-            this.parentView.render();
-          } else {
-            this.navigate('/settings/upgrade_session');
-          }
-        });
+    refreshVerifiedState () {
+      this.model.set('refreshing', true);
+
+      return this.render();
     }
   });
 

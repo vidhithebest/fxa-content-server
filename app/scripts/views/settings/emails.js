@@ -5,15 +5,15 @@
 define(function (require, exports, module) {
   'use strict';
 
+  const _ = require('underscore');
   const $ = require('jquery');
   const AvatarMixin = require('../mixins/avatar-mixin');
   const BaseView = require('../base');
   const Cocktail = require('cocktail');
   const Email = require('../../models/email');
   const FloatingPlaceholderMixin = require('../mixins/floating-placeholder-mixin');
-  const FormView = require('../form');
+  const UpgradeSessionView = require('./upgrade_session');
   const preventDefaultThen = require('../base').preventDefaultThen;
-  const SettingsPanelMixin = require('../mixins/settings-panel-mixin');
   const SearchParamMixin = require('../../lib/search-param-mixin');
   const Strings = require('../../lib/strings');
   const showProgressIndicator = require('../decorators/progress_indicator');
@@ -25,75 +25,57 @@ define(function (require, exports, module) {
   const EMAIL_REFRESH_SELECTOR = 'button.settings-button.email-refresh';
   const EMAIL_REFRESH_DELAYMS = 350;
 
-  var View = FormView.extend({
-    template: Template,
+  const proto = UpgradeSessionView.prototype;
+  var View = UpgradeSessionView.extend({
+    upgradedTemplate: Template,
     className: 'emails',
     viewName: 'settings.emails',
 
-    events: {
+    events: _.extend({}, proto.events, {
       'click .email-disconnect': preventDefaultThen('_onDisconnectEmail'),
       'click .email-refresh.enabled': preventDefaultThen('refresh'),
       'click .resend': preventDefaultThen('resend'),
       'click .set-primary': preventDefaultThen('setPrimary')
-    },
+    }),
 
-    initialize (options) {
+    initialize (options = {}) {
       if (options.emails) {
         this._emails = options.emails;
       } else {
         this._emails = [];
       }
+      proto.initialize.call(this, options);
     },
 
     setInitialContext (context) {
+      proto.setInitialContext.call(this, context);
       context.set({
         buttonClass: this._hasSecondaryEmail() ? 'secondary' : 'primary',
         canChangePrimaryEmail: this._canChangePrimaryEmail(),
+        caption: this.translate(t('A secondary email is an additional address for receiving security notices and confirming new Sync devices')),
         emails: this._emails,
         hasSecondaryEmail: this._hasSecondaryEmail(),
         hasSecondaryVerifiedEmail: this._hasSecondaryVerifiedEmail(),
         isPanelOpen: this.isPanelOpen(),
-        newEmail: this.newEmail
+        newEmail: this.newEmail,
+        title: this.translate(t('Secondary email')),
+        upgradeHref: 'settings/emails'
       });
     },
 
-    beforeRender () {
-      // Only show this view on verified session
-      return this._isSecondaryEmailEnabled();
-    },
-
-    afterRender () {
+/*    afterRender () {
       // Panel should remain open if there are any unverified secondary emails
       if (this._hasSecondaryEmail() && ! this._hasSecondaryVerifiedEmail()) {
         this.openPanel();
       }
     },
-
+*/
     _canChangePrimaryEmail () {
       if (this.getSearchParam('canChangeEmail')) {
         return true;
       }
 
       return false;
-    },
-
-    _isSecondaryEmailEnabled () {
-      // Only show secondary email panel if the user is in a verified session and feature is enabled.
-      const account = this.getSignedInAccount();
-
-      return account.recoveryEmailSecondaryEmailEnabled()
-        .then((isEnabled) => {
-          if (! isEnabled) {
-            return this.remove();
-          }
-
-          // If we fail to fetch emails, then this user does not have this feature enabled
-          // and we should not display this panel.
-          return this._fetchEmails()
-            .fail(() => {
-              return this.remove();
-            });
-        });
     },
 
     _hasSecondaryEmail () {
@@ -178,7 +160,7 @@ define(function (require, exports, module) {
   Cocktail.mixin(
     View,
     AvatarMixin,
-    SettingsPanelMixin,
+    //SettingsPanelMixin,
     FloatingPlaceholderMixin,
     SearchParamMixin
   );

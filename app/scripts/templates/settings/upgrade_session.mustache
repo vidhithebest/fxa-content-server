@@ -1,10 +1,10 @@
-<div id="display-name" class="settings-unit">
+<div id="display-name" class="settings-unit {{#isPanelOpen}}open{{/isPanelOpen}}">
     <div class="settings-unit-stub">
         <header class="settings-unit-summary">
             <h2 class="settings-unit-title">{{ title }}</h2>
         </header>
-        <button class="settings-button primary settings-unit-toggle" data-href="settings/upgrade_session">
-            <span class="add-button">{{#t}}Unlock…{{/t}}</span>
+        <button class="settings-button primary settings-unit-toggle" data-href="{{ upgradeHref }}">
+            {{#t}}Unlock…{{/t}}
         </button>
     </div>
 
@@ -30,7 +30,7 @@
                 <a class="resend" data-id="{{ email }}">{{#t}}Not in inbox or spam folder? Resend{{/t}}</a>
             </ul>
             <div class="button-row">
-                <button type="submit" class="settings-button primary">{{#t}}Refresh{{/t}}</button>
+                <button class="settings-button primary refresh">{{#t}}Refresh{{/t}}</button>
                 <button class="settings-button secondary cancel">{{#t}}Done{{/t}}</button>
             </div>
         </form>
