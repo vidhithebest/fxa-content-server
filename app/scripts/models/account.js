@@ -440,6 +440,10 @@ define(function (require, exports, module) {
             signinOptions.originalLoginEmail = options.originalLoginEmail;
           }
 
+          if (options.verificationMethod) {
+            signinOptions.verificationMethod = options.verificationMethod;
+          }
+
           return this._fxaClient.signIn(email, password, relier, signinOptions);
         } else if (sessionToken) {
           // We have a cached Sync session so just check that it hasn't expired.
@@ -577,6 +581,22 @@ define(function (require, exports, module) {
             });
           }
         });
+    },
+
+    /**
+     * Verify the account using the sign-in code
+     *
+     * @param {String} code - the sign-in code
+     * @param {Object} [options]
+     * @param {Object} [options.service] - the service issuing signup request
+     * @param {String} [options.serverVerificationStatus] - the status of server verification
+     * @returns {Promise} - resolves when complete
+     */
+    verifySignInCode (code, options = {}) {
+      return this._fxaClient.verifyCode(
+        this.get('uid'),
+        code,
+        options);
     },
 
     /**

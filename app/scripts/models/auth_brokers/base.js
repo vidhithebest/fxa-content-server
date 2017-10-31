@@ -76,6 +76,7 @@ define(function (require, exports, module) {
         success: t('Secondary email verified successfully')
       }),
       afterCompleteSignIn: new NavigateBehavior('signin_verified'),
+      afterCompleteSignInCode: new NavigateBehavior('settings'),
       afterCompleteSignUp: new NavigateBehavior('signup_verified'),
       afterDeleteAccount: new NullBehavior(),
       afterForceAuth: new NavigateBehavior('signin_confirmed'),
@@ -238,6 +239,10 @@ define(function (require, exports, module) {
     afterCompleteSignIn (account) {
       return this.unpersistVerificationData(account)
         .then(() => this.getBehavior('afterCompleteSignIn'));
+    },
+
+    afterCompleteSignInCode () {
+      return p(this.getBehavior('afterCompleteSignInCode'));
     },
 
     /**

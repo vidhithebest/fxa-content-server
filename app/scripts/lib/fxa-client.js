@@ -272,6 +272,10 @@ define(function (require, exports, module) {
         signInOptions.originalLoginEmail = options.originalLoginEmail;
       }
 
+      if (options.verificationMethod) {
+        signInOptions.verificationMethod = options.verificationMethod;
+      }
+
       setMetricsContext(signInOptions, options);
 
       return client.signIn(email, password, signInOptions)
@@ -283,7 +287,12 @@ define(function (require, exports, module) {
             // legacy /account/login that lacks a verificationReason,
             // assume SIGN_UP if the account is not verified.
             accountData.verificationReason = VerificationReasons.SIGN_UP;
-            accountData.verificationMethod = VerificationMethods.EMAIL;
+
+            if (signInOptions.verificationMethod) {
+              accountData.verificationMethod = signInOptions.verificationMethod;
+            } else {
+              accountData.verificationMethod = VerificationMethods.EMAIL;
+            }
           }
 
           return getUpdatedSessionData(email, relier, accountData, options);
@@ -678,7 +687,7 @@ define(function (require, exports, module) {
                                      VerificationReasons.SIGN_UP;
             return {
               email: response.email,
-              verificationMethod: VerificationMethods.EMAIL,
+              // verificationMethod: VerificationMethods.EMAIL,
               verificationReason: verificationReason,
               verified: false
             };

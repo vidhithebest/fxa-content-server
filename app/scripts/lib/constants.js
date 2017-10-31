@@ -108,6 +108,7 @@ define(function (require, exports, module) {
 
     BLOCKED_SIGNIN_SUPPORT_URL: 'https://support.mozilla.org/kb/accounts-blocked',
     UNBLOCK_CODE_LENGTH: 8,
+    SIGNIN_CODE_LENGTH: 32,
 
     MARKETING_ID_SPRING_2015: 'spring-2015-android-ios-sync',
     MARKETING_ID_AUTUMN_2016: 'autumn-2016-connect-another-device',
