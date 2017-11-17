@@ -101,7 +101,7 @@ define(function (require, exports, module) {
         verified: true
       });
       sinon.stub(account, 'fetchProfile').callsFake(function () {
-        return p();
+        return Promise.resolve();
       });
 
       createSettingsView();
@@ -127,13 +127,13 @@ define(function (require, exports, module) {
           return account;
         });
         sinon.stub(user, 'setSignedInAccountByUid').callsFake(function () {
-          return p();
+          return Promise.resolve();
         });
         account.set('accessToken', ACCESS_TOKEN);
 
         createSettingsView();
         sinon.stub(view, 'checkAuthorization').callsFake(function () {
-          return p(true);
+          return Promise.resolve(true);
         });
         return view.render()
           .then(function () {
@@ -150,7 +150,7 @@ define(function (require, exports, module) {
       it('clears session information if uid is not found', function () {
         var account = user.initAccount({});
 
-        sinon.stub(user, 'sessionStatus').callsFake(() => p.reject(AuthErrors.toError('INVALID_TOKEN')));
+        sinon.stub(user, 'sessionStatus').callsFake(() => Promise.reject(AuthErrors.toError('INVALID_TOKEN')));
         sinon.stub(user, 'getAccountByUid').callsFake(() => account);
         sinon.spy(user, 'clearSignedInAccount');
 
@@ -171,7 +171,7 @@ define(function (require, exports, module) {
     describe('with session', function () {
       beforeEach(function () {
         sinon.stub(view, 'checkAuthorization').callsFake(function () {
-          return p(true);
+          return Promise.resolve(true);
         });
         account.set('accessToken', ACCESS_TOKEN);
       });
@@ -254,7 +254,7 @@ define(function (require, exports, module) {
         beforeEach(function () {
           var image = new ProfileImage({ id: 'foo', img: new Image(), url: 'url' });
           sinon.stub(account, 'fetchCurrentProfileImage').callsFake(function () {
-            return p(image);
+            return Promise.resolve(image);
           });
 
           return view.render()
@@ -287,7 +287,7 @@ define(function (require, exports, module) {
 
       it('has no avatar set', function () {
         sinon.stub(account, 'getAvatar').callsFake(function () {
-          return p({});
+          return Promise.resolve({});
         });
 
         return view.render()
@@ -302,7 +302,7 @@ define(function (require, exports, module) {
 
       it('has avatar but does not load', function () {
         sinon.stub(account, 'getAvatar').callsFake(function () {
-          return p({ avatar: 'blah.jpg', id: 'foo' });
+          return Promise.resolve({ avatar: 'blah.jpg', id: 'foo' });
         });
 
         return view.render()
@@ -324,7 +324,7 @@ define(function (require, exports, module) {
         var id = 'foo';
 
         sinon.stub(account, 'getAvatar').callsFake(function () {
-          return p({ avatar: url, id: id });
+          return Promise.resolve({ avatar: url, id: id });
         });
 
         return view.render()
@@ -339,7 +339,7 @@ define(function (require, exports, module) {
 
       describe('signOut', () => {
         it('on success, logs events and calls clearSessionAndNavigateToSignIn', () => {
-          sinon.stub(account, 'signOut').callsFake(() => p());
+          sinon.stub(account, 'signOut').callsFake(() => Promise.resolve());
 
           return view.signOut()
             .then(() => {
@@ -356,7 +356,7 @@ define(function (require, exports, module) {
 
         it('on error, logs events and calls clearSessionAndNavigateToSignIn', () => {
           sinon.stub(account, 'signOut').callsFake(() => {
-            return p.reject(AuthErrors.toError('UNEXPECTED_ERROR'));
+            return Promise.reject(AuthErrors.toError('UNEXPECTED_ERROR'));
           });
 
           return view.signOut()
@@ -407,7 +407,7 @@ define(function (require, exports, module) {
           return view.render()
             .then(function () {
               view.unsafeDisplaySuccess('hi');
-              return p().delay(10);
+              return p.delay(10);
             })
             .then(function () {
               assert.isTrue(spy.called, 'hide success called');
@@ -421,7 +421,7 @@ define(function (require, exports, module) {
           return view.render()
             .then(function () {
               view.displaySuccess('hi');
-              return p().delay(10);
+              return p.delay(10);
             })
             .then(function () {
               assert.isTrue(spy.called, 'hide success called');
